@@ -5,13 +5,18 @@ const multerConfig = require('../Middlewares/multerMiddleware')
 
 const express = require('express');
 
+const multer = require("multer");
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const router = new express.Router();
 
 // router.post('/user/register',userController.register)
 
 router.post('/user/login', userController.login)
 
-router.post('/project/add', jwtMiddleware, multerConfig.single('projectImage'), projectController.addproject)
+router.post('/project/add', jwtMiddleware, upload.single('projectImage'), projectController.addproject)
 
 router.get('/projects/allproject',projectController.getallproject)
 
