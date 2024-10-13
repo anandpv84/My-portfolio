@@ -10,34 +10,36 @@ cloudinary.config({
 });
 
 
-const uploadFromBuffer = (buffer) => {
+const uploadFromBuffer = (buffer, folder) => {
     return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream((error, result) => {
-            if (result) {
-                resolve(result);
-            } else {
-                reject(error);
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: folder },
+            (error, result) => {
+                if (result) {
+                    resolve(result);
+                } else {
+                    reject(error);
+                }
             }
-        });
+        );
         streamifier.createReadStream(buffer).pipe(stream);
     });
 };
 
-
 exports.addproject = async (req, res) => {
-
-    console.log("Inside addProject controller...")
+    console.log("Inside addProject controller...");
 
     const userId = req.payload;
     const { title, language, github, website, overview } = req.body;
     let imageUrl = null;
 
+    const folderName = "portfolio_assets";
     try {
-
         if (req.file) {
             try {
                 console.log("Uploading image...");
-                const imageResult = await uploadFromBuffer(req.file.buffer);
+                
+                const imageResult = await uploadFromBuffer(req.file.buffer, folderName);
                 imageUrl = imageResult.secure_url;
                 console.log("Image uploaded successfully:", imageUrl);
             } catch (error) {
@@ -45,7 +47,6 @@ exports.addproject = async (req, res) => {
                 return res.status(500).json({ error: "Error uploading image" });
             }
         }
-
 
         const existingProject = await projects.findOne({ github });
         if (existingProject) {
@@ -66,12 +67,12 @@ exports.addproject = async (req, res) => {
 
         console.log("Project added successfully:", newProject);
         res.status(200).json({ message: "Project added successfully" });
-
     } catch (err) {
         console.error("Unable to add project:", err);
         res.status(500).json({ error: "Unable to add project", details: err.message });
     }
 };
+
 
 
 exports.getallproject = async (req, res) => {
