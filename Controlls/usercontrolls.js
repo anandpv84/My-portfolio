@@ -1,12 +1,6 @@
 const users = require('../Modals/userSchema')
 const jwt = require('jsonwebtoken')
 
-// exports.register = (req, res) => {
-//    
-//     res.status(200).json("registration request")
-// }
-
-
 exports.login = async (req, res) => {
     console.log("inside login controller function")
     const { username, password } = req.body;
