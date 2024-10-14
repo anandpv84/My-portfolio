@@ -51,7 +51,7 @@ exports.addproject = async (req, res) => {
         const existingProject = await projects.findOne({ github });
         if (existingProject) {
             console.log("Project already exists with GitHub link:", github);
-            return res.status(406).json({ message: "Project already exists. Please upload a new one." });
+            return res.status(409).json({ message: "Project already exists. Please upload a new one." });
         }
 
         const newProject = new projects({
